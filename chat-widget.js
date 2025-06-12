@@ -92,7 +92,7 @@
 
         /* Messages */
         #chat-messages {
-            height: calc(100% - 154px);
+            height: calc(100% - 162px);
             overflow-y: auto;
             padding: 20px;
             display: flex;
