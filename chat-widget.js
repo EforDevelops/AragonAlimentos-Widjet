@@ -1,4 +1,3 @@
-
 (function () {
     if (window.chatWidgetLoaded) return;
     window.chatWidgetLoaded = true;
@@ -103,6 +102,63 @@
             scrollbar-color: #830F07 #F5F2F0;
         }
 
+        /* Contenedor de cada fila de mensaje (avatar + bocadillo) */
+        .message-row {
+            display: flex; /* Permite colocar la imagen y el mensaje uno al lado del otro */
+            align-items: flex-end; /* Alinea los elementos al final (bocadillo y avatar en la misma línea base) */
+            margin-bottom: 12px; /* Espacio entre las filas de mensajes */
+        }
+
+        /* Alineación para mensajes del asistente (avatar a la izquierda, bocadillo a la izquierda) */
+        .assistant-message-row {
+            justify-content: flex-start; /* Alinea la fila completa a la izquierda */
+            align-self: flex-start; /* Asegura que la fila se posicione a la izquierda en el contenedor flex principal */
+        }
+
+        /* Alineación para mensajes del usuario (bocadillo a la derecha) */
+        .user-message-row {
+            justify-content: flex-end; /* Alinea la fila completa a la derecha */
+            align-self: flex-end; /* Asegura que la fila se posicione a la derecha en el contenedor flex principal */
+        }
+
+        /* Estilo para la imagen del avatar del asistente */
+        .assistant-avatar {
+            width: 40px; /* <--- ¡Aquí especificas el tamaño! Por ejemplo, 40px */
+            height: 40px; /* La altura debe ser igual al ancho para un círculo perfecto */
+            border-radius: 50%; /* Esto hace que la imagen sea circular */
+            object-fit: cover; /* Asegura que la imagen se ajuste y cubra el espacio sin distorsionarse */
+            margin-right: 10px; /* Espacio entre el avatar y el bocadillo del mensaje */
+            flex-shrink: 0; /* Evita que la imagen se encoja si el contenido del mensaje es muy largo */
+        }
+
+        /* Ajustes para los bocadillos de mensaje */
+        .message {
+            padding: 12px 18px;
+            border-radius: 18px;
+            /* max-width debe considerar el espacio del avatar y el margen */
+            max-width: calc(85% - 50px); /* Ejemplo: 85% del ancho del chat - 40px de avatar - 10px de margen */
+            word-wrap: break-word;
+            margin-bottom: 0; /* Ya no necesitamos margen inferior aquí, lo maneja .message-row */
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            position: relative;
+            line-height: 1.5;
+            font-size: 16px;
+            /* Elimina 'align-self' de aquí, el 'message-row' lo maneja */
+        }
+
+        /* Estilo del bocadillo del usuario */
+        .user-message {
+            background-color: #FAC300;
+            color: #830F07;
+            border-bottom-right-radius: 5px;
+        }
+
+        /* Estilo del bocadillo del asistente */
+        .assistant-message {
+            background-color: #830F07;
+            color: #F5F2F0;
+            border-bottom-left-radius: 5px;
+        }
         #chat-messages::-webkit-scrollbar {
             width: 10px;
         }
@@ -253,278 +309,179 @@
     // Inyectar HTML
     const container = document.createElement("div");
     container.innerHTML = `
-<div id="chat-container">
-<div id="chat-popup">
-<div id="chat-header">
-<div id="chat-title">Ternasquito</div>
-<div id="close-chat">×</div>
-</div>
-<div aria-live="polite" id="chat-messages" role="log"></div>
-<div id="chat-input-container">
-<input aria-label="Mensaje" id="chat-input" placeholder="Escribe tu mensaje..." type="text"/>
-<button aria-label="Enviar mensaje" id="send-button">Enviar</button>
-</div>
-</div>
-<div aria-label="Abrir chat" id="chat-button">
-<svg fill="none" height="30" viewbox="0 0 24 24" width="30" xmlns="http://www.w3.org/2000/svg">
-<path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H6L4 18V4H20V16Z" fill="white"></path>
-</svg>
-</div>
-</div>
-<script>
-        // Elementos del DOM
-        const chatButton = document.getElementById('chat-button');
-        const chatPopup = document.getElementById('chat-popup');
-        const closeChat = document.getElementById('close-chat');
-        const chatInput = document.getElementById('chat-input');
-        const sendButton = document.getElementById('send-button');
-        const chatMessages = document.getElementById('chat-messages');
-        
-        // URL de la API para enviar mensajes
-        const API_URL = 'https://aragon-alimentos-backend-hmh8gxfefyfecfdx.westeurope-01.azurewebsites.net/chat/message'; // Reemplaza con tu URL real
-        
-        // Historial de conversación
-        let conversationHistory = [];
-        
-        // Mostrar/ocultar el chat
-        chatButton.addEventListener('click', () => {
-            chatPopup.style.display = 'block';
-            chatButton.style.display = 'none';
-        });
-        
-        closeChat.addEventListener('click', () => {
-            chatPopup.style.display = 'none';
-            chatButton.style.display = 'flex';
-        });
-        
-        // Función para agregar un mensaje al historial de chat
-        function addMessageToChat(role, content) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message');
-            messageDiv.classList.add(role === 'user' ? 'user-message' : 'assistant-message');
-            messageDiv.textContent = content;
-            chatMessages.appendChild(messageDiv);
-            
-            // Scroll al final del chat
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            
-            // Agregar al historial de conversación
-            conversationHistory.push({
-                role: role === 'user' ? 'user' : 'assistant',
-                content: content
-            });
-        }
-        
-        // Función para mostrar el indicador de carga
-        function showLoadingIndicator() {
-            const loadingDiv = document.createElement('div');
-            loadingDiv.classList.add('loading');
-            loadingDiv.id = 'loading-indicator';
-            
-            const loadingDots = document.createElement('div');
-            loadingDots.classList.add('loading-dots');
-            
-            for (let i = 0; i < 3; i++) {
-                const dot = document.createElement('span');
-                loadingDots.appendChild(dot);
-            }
-            
-            loadingDiv.appendChild(loadingDots);
-            chatMessages.appendChild(loadingDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-        
-        // Función para ocultar el indicador de carga
-        function hideLoadingIndicator() {
-            const loadingIndicator = document.getElementById('loading-indicator');
-            if (loadingIndicator) {
-                loadingIndicator.remove();
-            }
-        }
-        
-        // Función para enviar un mensaje al servidor
-        async function sendMessageToServer(userMessage) {
-            try {
-                showLoadingIndicator();
-                
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(conversationHistory)
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Error en la respuesta del servidor');
-                }
-                
-                const data = await response.json();
-                hideLoadingIndicator();
-                
-                if (data && data.role === 'assistant' && data.content) {
-                    addMessageToChat('assistant', data.content);
-                } else {
-                    throw new Error('Formato de respuesta inválido');
-                }
-            } catch (error) {
-                console.error('Error al enviar mensaje:', error);
-                hideLoadingIndicator();
-                addMessageToChat('assistant', 'Lo siento, ha ocurrido un error. Por favor, inténtalo de nuevo más tarde.');
-            }
-        }
-        
-        // Manejar el envío de mensajes
-        function handleSendMessage() {
-            const message = chatInput.value.trim();
-            if (message) {
-                addMessageToChat('user', message);
-                chatInput.value = '';
-                sendMessageToServer(message);
-            }
-        }
-        
-        sendButton.addEventListener('click', handleSendMessage);
-        
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleSendMessage();
-            }
-        });
-        
-        // Mensaje de bienvenida
-        window.addEventListener('load', () => {
-            addMessageToChat('assistant', '¡Hola, soy Ternasquito! ¿En qué puedo ayudarte hoy?');
-        });
-    </script>
-`;
+        <div id="chat-container">
+            <div id="chat-popup">
+                <div id="chat-header">
+                    <div id="chat-title">Ternasquito</div>
+                    <div id="close-chat">×</div>
+                </div>
+                <div aria-live="polite" id="chat-messages" role="log"></div>
+                <div id="chat-input-container">
+                    <input aria-label="Mensaje" id="chat-input" placeholder="Escribe tu mensaje..." type="text"/>
+                    <button aria-label="Enviar mensaje" id="send-button">Enviar</button>
+                </div>
+            </div>
+            <div aria-label="Abrir chat" id="chat-button">
+                <img src="https://aragonalimentoswidjet.blob.core.windows.net/$web/ternasco.png" alt="Abrir Chat" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover;">
+            </div>
+        </div>
+    `;
     document.body.appendChild(container);
 
     // Lógica JS del chat
+    // Elementos del DOM
+    const chatButton = document.getElementById('chat-button');
+    const chatPopup = document.getElementById('chat-popup');
+    const closeChat = document.getElementById('close-chat');
+    const chatInput = document.getElementById('chat-input');
+    const sendButton = document.getElementById('send-button');
+    const chatMessages = document.getElementById('chat-messages');
+
+    // URL de la API para enviar mensajes
+    // He mantenido la URL original de Azure en este ejemplo,
+    // pero asegúrate de usar la correcta si estás probando localmente.
+    const API_URL = 'https://aragon-alimentos-backend-hmh8gxfefyfecfdx.westeurope-01.azurewebsites.net/chat/message';
+
+    // Historial de conversación
+    let conversationHistory = [];
+
+    // Mostrar/ocultar el chat
+    chatButton.addEventListener('click', () => {
+        chatPopup.style.display = 'block';
+        chatButton.style.display = 'none';
+    });
+
+    closeChat.addEventListener('click', () => {
+        chatPopup.style.display = 'none';
+        chatButton.style.display = 'flex';
+    });
+
+    // Función para agregar un mensaje al historial de chat
+    function addMessageToChat(role, content) {
+        const messageContainer = document.createElement('div');
+        // Usamos una clase general para los contenedores de mensajes para una alineación flexible
+        messageContainer.classList.add('message-row'); 
     
-        // Elementos del DOM
-        const chatButton = document.getElementById('chat-button');
-        const chatPopup = document.getElementById('chat-popup');
-        const closeChat = document.getElementById('close-chat');
-        const chatInput = document.getElementById('chat-input');
-        const sendButton = document.getElementById('send-button');
-        const chatMessages = document.getElementById('chat-messages');
-        
-        // URL de la API para enviar mensajes
-        const API_URL = 'https://aragon-alimentos-backend-hmh8gxfefyfecfdx.westeurope-01.azurewebsites.net/chat/message'; // Reemplaza con tu URL real
-        
-        // Historial de conversación
-        let conversationHistory = [];
-        
-        // Mostrar/ocultar el chat
-        chatButton.addEventListener('click', () => {
-            chatPopup.style.display = 'block';
-            chatButton.style.display = 'none';
-        });
-        
-        closeChat.addEventListener('click', () => {
-            chatPopup.style.display = 'none';
-            chatButton.style.display = 'flex';
-        });
-        
-        // Función para agregar un mensaje al historial de chat
-        function addMessageToChat(role, content) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message');
-            messageDiv.classList.add(role === 'user' ? 'user-message' : 'assistant-message');
-            messageDiv.textContent = content;
-            chatMessages.appendChild(messageDiv);
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        // Clases específicas para el estilo del bocadillo
+        messageDiv.classList.add(role === 'user' ? 'user-message' : 'assistant-message');
+        messageDiv.textContent = content;
+    
+        // Solo añade la imagen si es un mensaje del asistente
+        if (role === 'assistant') {
+            const assistantImage = document.createElement('img');
+            assistantImage.src = 'https://aragonalimentoswidjet.blob.core.windows.net/$web/ternasco.png'; // 
+            assistantImage.alt = 'Avatar del Asistente';
+            assistantImage.classList.add('assistant-avatar'); // Clase para estilizar la imagen (tamaño, forma circular)
+    
+            // Añadimos la imagen primero al contenedor de la fila
+            messageContainer.appendChild(assistantImage);
+            // Luego añadimos el bocadillo del mensaje
+            messageContainer.appendChild(messageDiv);
             
-            // Scroll al final del chat
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            // Alineamos todo el contenedor del mensaje a la izquierda
+            messageContainer.classList.add('assistant-message-row');
+        } else { // Si es un mensaje del usuario
+            // Añadimos el bocadillo del mensaje al contenedor de la fila
+            messageContainer.appendChild(messageDiv);
             
-            // Agregar al historial de conversación
-            conversationHistory.push({
-                role: role === 'user' ? 'user' : 'assistant',
-                content: content
+            // Alineamos todo el contenedor del mensaje a la derecha
+            messageContainer.classList.add('user-message-row');
+        }
+    
+        chatMessages.appendChild(messageContainer); // Añade la fila completa al chat
+    
+        // Scroll al final del chat para ver el último mensaje
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+        // Agregar al historial de conversación (esto no cambia)
+        conversationHistory.push({
+            role: role === 'user' ? 'user' : 'assistant',
+            content: content
+        });
+    }
+
+    // Función para mostrar el indicador de carga
+    function showLoadingIndicator() {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.classList.add('loading');
+        loadingDiv.id = 'loading-indicator';
+
+        const loadingDots = document.createElement('div');
+        loadingDots.classList.add('loading-dots');
+
+        for (let i = 0; i < 3; i++) {
+            const dot = document.createElement('span');
+            loadingDots.appendChild(dot);
+        }
+
+        loadingDiv.appendChild(loadingDots);
+        chatMessages.appendChild(loadingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Función para ocultar el indicador de carga
+    function hideLoadingIndicator() {
+        const loadingIndicator = document.getElementById('loading-indicator');
+        if (loadingIndicator) {
+            loadingIndicator.remove();
+        }
+    }
+
+    // Función para enviar un mensaje al servidor
+    async function sendMessageToServer(userMessage) {
+        try {
+            showLoadingIndicator();
+
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(conversationHistory)
             });
-        }
-        
-        // Función para mostrar el indicador de carga
-        function showLoadingIndicator() {
-            const loadingDiv = document.createElement('div');
-            loadingDiv.classList.add('loading');
-            loadingDiv.id = 'loading-indicator';
-            
-            const loadingDots = document.createElement('div');
-            loadingDots.classList.add('loading-dots');
-            
-            for (let i = 0; i < 3; i++) {
-                const dot = document.createElement('span');
-                loadingDots.appendChild(dot);
+
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
             }
-            
-            loadingDiv.appendChild(loadingDots);
-            chatMessages.appendChild(loadingDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-        
-        // Función para ocultar el indicador de carga
-        function hideLoadingIndicator() {
-            const loadingIndicator = document.getElementById('loading-indicator');
-            if (loadingIndicator) {
-                loadingIndicator.remove();
+
+            const data = await response.json();
+            hideLoadingIndicator();
+
+            if (data && data.role === 'assistant' && data.content) {
+                addMessageToChat('assistant', data.content);
+            } else {
+                throw new Error('Formato de respuesta inválido');
             }
+        } catch (error) {
+            console.error('Error al enviar mensaje:', error);
+            hideLoadingIndicator();
+            addMessageToChat('assistant', 'Lo siento, ha ocurrido un error. Por favor, inténtalo de nuevo más tarde.');
         }
-        
-        // Función para enviar un mensaje al servidor
-        async function sendMessageToServer(userMessage) {
-            try {
-                showLoadingIndicator();
-                
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(conversationHistory)
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Error en la respuesta del servidor');
-                }
-                
-                const data = await response.json();
-                hideLoadingIndicator();
-                
-                if (data && data.role === 'assistant' && data.content) {
-                    addMessageToChat('assistant', data.content);
-                } else {
-                    throw new Error('Formato de respuesta inválido');
-                }
-            } catch (error) {
-                console.error('Error al enviar mensaje:', error);
-                hideLoadingIndicator();
-                addMessageToChat('assistant', 'Lo siento, ha ocurrido un error. Por favor, inténtalo de nuevo más tarde.');
-            }
+    }
+
+    // Manejar el envío de mensajes
+    function handleSendMessage() {
+        const message = chatInput.value.trim();
+        if (message) {
+            addMessageToChat('user', message);
+            chatInput.value = '';
+            sendMessageToServer(message);
         }
-        
-        // Manejar el envío de mensajes
-        function handleSendMessage() {
-            const message = chatInput.value.trim();
-            if (message) {
-                addMessageToChat('user', message);
-                chatInput.value = '';
-                sendMessageToServer(message);
-            }
+    }
+
+    sendButton.addEventListener('click', handleSendMessage);
+
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleSendMessage();
         }
-        
-        sendButton.addEventListener('click', handleSendMessage);
-        
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleSendMessage();
-            }
-        });
-        
-        // Mensaje de bienvenida
-        window.addEventListener('load', () => {
-            addMessageToChat('assistant', '¡Hola, soy Ternasquito! ¿En qué puedo ayudarte hoy?');
-        });
-    
+    });
+
+    // Mensaje de bienvenida
+    window.addEventListener('load', () => {
+        addMessageToChat('assistant', '¡Hola, soy Ternasquito! ¿En qué puedo ayudarte hoy?');
+    });
+
 })();
