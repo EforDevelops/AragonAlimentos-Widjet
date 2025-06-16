@@ -26,10 +26,10 @@
 
         #chat-button {
             align-self: flex-end;
-            width: 70px;
-            height: 70px;
+            width: 320px;
+            height: 416px;
             border-radius: 50%;
-            background-color: #830F07;
+            background-color: transparent;
             color: white;
             display: flex;
             justify-content: center;
@@ -41,8 +41,9 @@
         }
 
         #chat-button:hover {
-            background-color: #6b0c06;
-            transform: scale(1.05);
+            /* No hay background-color aquí, por lo que mantendrá el original */
+            transform: scale(1.05); /* Hace el botón ligeramente más grande */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* La sombra se hace más grande y oscura */
         }
 
         /* Chat popup */
@@ -92,7 +93,7 @@
 
         /* Messages */
         #chat-messages {
-            height: calc(100% - 162px);
+            height: calc(100% - 154px);
             overflow-y: auto;
             padding: 20px;
             display: flex;
@@ -312,7 +313,7 @@
         <div id="chat-container">
             <div id="chat-popup">
                 <div id="chat-header">
-                    <div id="chat-title">Ternasquito</div>
+                    <div id="chat-title">Alma Sabroso</div>
                     <div id="close-chat">×</div>
                 </div>
                 <div aria-live="polite" id="chat-messages" role="log"></div>
@@ -322,7 +323,7 @@
                 </div>
             </div>
             <div aria-label="Abrir chat" id="chat-button">
-                <img src="https://aragonalimentoswidjet.blob.core.windows.net/$web/ternasco.png" alt="Abrir Chat" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover;">
+                <img src="https://aragonalimentoswidjet.blob.core.windows.net/$web/Alma_Sabroso-removebg-preview.png" alt="Abrir Chat" style="width: 320px; height: 416px; border-radius: 50%; object-fit: cover;">
             </div>
         </div>
     `;
@@ -371,7 +372,7 @@
         // Solo añade la imagen si es un mensaje del asistente
         if (role === 'assistant') {
             const assistantImage = document.createElement('img');
-            assistantImage.src = 'https://aragonalimentoswidjet.blob.core.windows.net/$web/ternasco.png'; // 
+            assistantImage.src = 'https://aragonalimentoswidjet.blob.core.windows.net/$web/Alma_Sabroso.jpg'; // <--- ¡IMPORTANTE! Reemplaza con la URL de tu imagen
             assistantImage.alt = 'Avatar del Asistente';
             assistantImage.classList.add('assistant-avatar'); // Clase para estilizar la imagen (tamaño, forma circular)
     
@@ -481,7 +482,7 @@
 
     // Mensaje de bienvenida
     window.addEventListener('load', () => {
-        addMessageToChat('assistant', '¡Hola, soy Ternasquito! ¿En qué puedo ayudarte hoy?');
+        addMessageToChat('assistant', '¡Hola, soy Alma Sabroso! ¿En qué puedo ayudarte hoy?');
     });
 
 })();
