@@ -26,8 +26,8 @@
 
         #chat-button {
             align-self: flex-end;
-            width: 320px;
-            height: 416px;
+            width: 160px;
+            height: 208px;
             border-radius: 50%;
             background-color: transparent;
             color: white;
@@ -304,6 +304,13 @@
                 font-size: 15px;
             }
         }
+        
+        @media (max-width: 600px) {
+            #chat-button {
+                width: 56px;
+                height: 72px;
+            }
+        }
     `;
     document.head.appendChild(style);
 
@@ -323,7 +330,7 @@
                 </div>
             </div>
             <div aria-label="Abrir chat" id="chat-button">
-                <img src="https://aragonalimentoswidjet.blob.core.windows.net/$web/Alma_Sabroso-removebg-preview.png" alt="Abrir Chat" style="width: 320px; height: 416px; border-radius: 50%; object-fit: cover;">
+                <img src="https://aragonalimentoswidjet.blob.core.windows.net/$web/Alma_Sabroso-removebg-preview.png" alt="Abrir Chat" style="width: 160px; height: 208px; border-radius: 50%; object-fit: cover;">
             </div>
         </div>
     `;
