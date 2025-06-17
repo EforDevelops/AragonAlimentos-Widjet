@@ -329,9 +329,9 @@
                     <button aria-label="Enviar mensaje" id="send-button">Enviar</button>
                 </div>
             </div>
-            <div aria-label="Abrir chat" id="chat-button">
-                <img src="https://aragonalimentoswidjet.blob.core.windows.net/$web/Alma_Sabroso-removebg-preview.png" alt="Abrir Chat" style="width: 160px; height: 208px; border-radius: 50%; object-fit: cover;">
-            </div>
+            <img src="https://aragonalimentoswidjet.blob.core.windows.net/$web/Alma_Sabroso-removebg-preview.png" 
+                alt="Abrir Chat" 
+                style="width: 100%; height: 100%; object-fit: cover;">
         </div>
     `;
     document.body.appendChild(container);
