@@ -310,6 +310,18 @@
                 width: 56px;
                 height: 72px;
             }
+            #chat-button img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover; /* La imagen cubre todo el área */
+                /* object-fit: contain; */ /* Alternativa: mantiene proporciones */
+            }
+        }
+        #chat-button img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* La imagen cubre todo el área */
+            /* object-fit: contain; */ /* Alternativa: mantiene proporciones */
         }
     `;
     document.head.appendChild(style);
@@ -329,9 +341,9 @@
                     <button aria-label="Enviar mensaje" id="send-button">Enviar</button>
                 </div>
             </div>
-            <img src="https://aragonalimentoswidjet.blob.core.windows.net/$web/Alma_Sabroso-removebg-preview.png" 
-                alt="Abrir Chat" 
-                style="width: 100%; height: 100%; object-fit: cover;">
+            <div aria-label="Abrir chat" id="chat-button">
+                <img src="https://aragonalimentoswidjet.blob.core.windows.net/$web/Alma_Sabroso-removebg-preview.png" alt="Abrir Chat"">
+            </div>
         </div>
     `;
     document.body.appendChild(container);
