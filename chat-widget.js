@@ -310,18 +310,12 @@
                 width: 56px;
                 height: 72px;
             }
-            #chat-button img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover; /* La imagen cubre todo el área */
-                /* object-fit: contain; */ /* Alternativa: mantiene proporciones */
-            }
         }
-        #chat-button img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* La imagen cubre todo el área */
-            /* object-fit: contain; */ /* Alternativa: mantiene proporciones */
+        #chat-button-img {
+            width: 100%; /* La imagen toma el 100% del ancho del padre */
+            height: 100%; /* La imagen toma el 100% del alto del padre */
+            border-radius: 50%; /* La imagen se recorta como un círculo */
+            object-fit: cover; /* La imagen cubre todo el área, recortando si es necesario */
         }
     `;
     document.head.appendChild(style);
@@ -342,7 +336,7 @@
                 </div>
             </div>
             <div aria-label="Abrir chat" id="chat-button">
-                <img src="https://aragonalimentoswidjet.blob.core.windows.net/$web/Alma_Sabroso-removebg-preview.png" alt="Abrir Chat"">
+                <img src="https://aragonalimentoswidjet.blob.core.windows.net/$web/Alma_Sabroso-removebg-preview.png" alt="Abrir Chat" id="chat-button-img">
             </div>
         </div>
     `;
