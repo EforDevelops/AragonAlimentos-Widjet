@@ -35,7 +35,6 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             z-index: 1001;
         }
@@ -43,7 +42,6 @@
         #chat-button:hover {
             /* No hay background-color aquí, por lo que mantendrá el original */
             transform: scale(1.05); /* Hace el botón ligeramente más grande */
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* La sombra se hace más grande y oscura */
         }
 
         /* Chat popup */
